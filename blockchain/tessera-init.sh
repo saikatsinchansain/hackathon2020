@@ -70,7 +70,9 @@ cat <<EOF > ${DDIR}/tessera-config.json
             "communicationType" : "REST"
         }
     ],
-    "peer": [ ],
+    "peer": [ {
+            "url": "http://172.31.37.80:9000/"
+        }],
     "keys": {
         "passwords": [],
         "keyData": [
