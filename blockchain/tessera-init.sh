@@ -27,14 +27,14 @@ cat <<EOF > ${DDIR}/tessera-config.json
     "jdbc": {
         "username": "sa",
         "password": "",
-        "url": "jdbc:h2:${DDIR}/db${i};MODE=Oracle;TRACE_LEVEL_SYSTEM_OUT=0",
+        "url": "jdbc:h2:${DDIR}/db;MODE=Oracle;TRACE_LEVEL_SYSTEM_OUT=0",
         "autoCreateTables": true
     },
     "serverConfigs":[
         {
             "app":"ThirdParty",
             "enabled": true,
-            "serverAddress": "http://localhost:${serverPortThirdParty}",
+            "serverAddress": "http://$(hostname -i):${serverPortThirdParty}",
             "cors" : {
                 "allowedMethods" : ["GET", "OPTIONS"],
                 "allowedOrigins" : ["*"]
@@ -50,7 +50,7 @@ cat <<EOF > ${DDIR}/tessera-config.json
         {
             "app":"P2P",
             "enabled": true,
-            "serverAddress":"http://localhost:${serverPortP2P}",
+            "serverAddress":"http://$(hostname -i):${serverPortP2P}",
             "sslConfig": {
                 "tls": "OFF",
                 "generateKeyStoreIfNotExisted": true,
