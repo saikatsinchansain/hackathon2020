@@ -11,6 +11,7 @@ echo "[*] Cleaning up temporary data directories"
 rm -rf data
 mkdir -p data/{keystore,geth,logs}
 
+#cp permissioned-nodes.json data/static-nodes.json
 geth -datadir data account new -password passwords.txt
 mv data/keystore/* data/keystore/key
 bootnode -genkey nodekey
@@ -21,12 +22,12 @@ cat <<EOF > data/static-nodes.json
   "enode://$ENODE@$HOST_IP:$PORT?discport=0&raftport=$RAFT_PORT"
 ]
 EOF
+cat data/static-nodes.json
 geth --datadir data init genesis.json
 
-cat data/static-nodes.json
 
 #Initialise Tessera configuration
-#./tessera-init.sh
+./tessera-init.sh
 
 #Initialise Cakeshop configuration
 #./cakeshop-init.sh

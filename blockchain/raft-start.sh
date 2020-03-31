@@ -3,6 +3,7 @@ set -u
 set -e
 
 function performValidation() {
+    # Warn the user if chainId is same as Ethereum main net (see https://github.com/jpmorganchase/quorum/issues/487)
     genesisFile=$1
     NETWORK_ID=$(cat $genesisFile | tr -d '\r' | grep chainId | awk -F " " '{print $2}' | awk -F "," '{print $1}')
 
@@ -36,7 +37,20 @@ performValidation genesis.json
 
 mkdir -p data/logs
 
+#if [ "$privacyImpl" == "tessera" ]; then
+#  echo "[*] Starting Tessera nodes"
+./tessera-start.sh 
+#elif [ "$privacyImpl" == "tessera-remote" ]; then
+#  echo "[*] Starting tessera nodes"
+#  ./tessera-start-remote.sh ${tesseraOptions}
+#else
+#  echo "Unsupported privacy implementation: ${privacyImpl}"
+#  usage
+#fi
+
 echo "[*] Starting Ethereum nodes with ChainID and NetworkId of $NETWORK_ID"
+#QUORUM_GETH_ARGS=${QUORUM_GETH_ARGS:-}
+#set -v
 ARGS="--nodiscover --verbosity 3 --networkid $NETWORK_ID --raft --rpc --rpccorsdomain=* --rpcvhosts=* --rpcaddr 0.0.0.0 --rpcapi admin,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft,quorumPermission --emitcheckpoints --unlock 0 --password passwords.txt"
 
 basePort=21000
@@ -45,8 +59,9 @@ baseRaftPort=50401
 port=$(($basePort))
 rpcPort=$(($baseRpcPort))
 raftPort=$(($baseRaftPort))
-PRIVATE_CONFIG=ignore nohup geth --datadir data ${ARGS} --raftport ${raftPort} --rpcport ${rpcPort} --port ${port} 2> data/logs/node.log &
+PRIVATE_CONFIG=data/tessera/tm.ipc nohup geth --datadir data ${ARGS} --raftport ${raftPort} --rpcport ${rpcPort} --port ${port} 2> data/logs/node.log &
     #qdata/c${i}/tm.ipc  nohup
+#set +v
 
 echo
 echo "Nodes configured. See 'data/logs' for logs, and run e.g. 'geth attach 'http://$(hostname -i):$((baseRpcPort))'' to attach to the first Geth node."
